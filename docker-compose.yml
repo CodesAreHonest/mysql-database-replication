@@ -1,31 +1,19 @@
 version: "3.5"
 
 services:
-  apache:
-    build: images/apache
-    links:
-      - php
-    ports:
-      - "80:80"
-    volumes:
-      - ./images/php/ambc/app/public:/var/www/html/app/public
-    networks:
-      backend:
-        aliases:
-          - ambc-apache
-
-  php:
-    build: images/php
+  ambc:
+    build:
+      context: "."
+      dockerfile: "./images/php/Dockerfile"
+      args:
+        uid: ${UID}
+        serverName: ${APP_URL}
     volumes:
       - ./images/php/ambc:/var/www/html
-    links:
-      - db
-      - cache
-    ports:
-      - "9000:9000"
+    restart: unless-stopped
     environment:
       APP_ENV: local
-      APP_DEBUG: 'true'
+      APP_DEBUG: "true"
       APP_KEY: SomeRandomKey!!!
       APP_LOCALE: en
       APP_FALLBACK_LOCALE: en
@@ -35,18 +23,16 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       CACHE_DRIVER: redis
+    ports:
+      - 80:80
+      - 443:443
     depends_on:
       - cache
+      - db
     networks:
       backend:
         aliases:
-          - ambc
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        window: 60s
+          - ambc-apache
 
   db:
     image: mysql:8
