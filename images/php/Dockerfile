@@ -1,9 +1,5 @@
 FROM php:7.4-alpine
 
-FROM composer
-RUN composer global require "laravel/lumen-installer"
-ENV PATH $PATH:/tmp/vendor/bin
-
 RUN apt-get update && apt-get install -y build-essential \
     nano --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
