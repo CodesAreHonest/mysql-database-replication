@@ -2,20 +2,22 @@ version: "3.5"
 
 services:
   apache:
-    build: images/nginx
-    command: nginx -g "daemon off;"
+    build: images/apache
     links:
       - php
     ports:
       - "80:80"
     volumes:
-      - ./images/php/app/public:/var/www/html/app/public
+      - ./images/php/ambc/app/public:/var/www/html/app/public
+    networks:
+      backend:
+        aliases:
+          - ambc-apache
+
   php:
     build: images/php
     volumes:
-      - ./images/php:/var/www/html
-    working_dir: /var/www/html/app/public
-    command: php-fpm
+      - ./images/php/ambc:/var/www/html
     links:
       - db
       - cache
@@ -32,27 +34,74 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      MEMCACHED_HOST: cache
-      CACHE_DRIVER: memcached
+      CACHE_DRIVER: redis
+    depends_on:
+      - cache
+    networks:
+      backend:
+        aliases:
+          - ambc
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 60s
+
   db:
     image: mysql:8
     command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
-    ports:
-      - "3306:3306"
+    volumes:
+      - db_data:/var/www/html
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USERNAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      backend:
+        aliases:
+          - ambc-database
+
   cache:
-    image: memcached:1.6-alpine
+    image: redis:6.0-alpine
+    restart: unless-stopped
+    tty: true
+    networks:
+      backend:
+        aliases:
+          - ambc-redis
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql_db
+      PMA_PORT: 3306
+    ports:
+      - "8000:80"
+    restart: unless-stopped
+    tty: true
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      backend:
+        aliases:
+          - ambc-phpmyadmin
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 60s
 
 networks:
   backend:
     name: abmc-network
 
 volumes:
-  mysql_data:
+  db_data:
     driver: local
   app_data:
     driver: local
