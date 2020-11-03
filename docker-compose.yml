@@ -61,14 +61,14 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
-      PMA_HOST: mysql_db
+      PMA_HOST: db
       PMA_PORT: 3306
     ports:
       - "8000:80"
     restart: unless-stopped
     tty: true
     links:
-      - db
+      - db:db
     depends_on:
       - db
     networks:
