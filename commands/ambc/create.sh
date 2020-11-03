@@ -5,4 +5,5 @@ cd ./images/php || exit
 cp .env.ambc.example ./ambc/.env
 
 cd ./ambc || exit
-composer update
+composer install
+composer dump-autoload

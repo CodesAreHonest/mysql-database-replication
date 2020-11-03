@@ -38,6 +38,9 @@ RUN docker-php-ext-install \
     pdo_mysql \ 
     gd 
 
+RUN pecl install redis
+RUN docker-php-ext-enable redis
+
 # We need a user with the same UID/GID as the host user
 # so when we execute CLI commands, all the host file's permissions and ownership remain intact.
 # Otherwise commands from inside the container would create root-owned files and directories.
