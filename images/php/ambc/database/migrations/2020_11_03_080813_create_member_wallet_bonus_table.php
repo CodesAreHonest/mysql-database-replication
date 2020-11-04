@@ -13,17 +13,18 @@ class CreateMemberWalletBonusTable extends Migration
      */
     public function up()
     {
-        Schema::create('member_wallet_bonus', function (Blueprint $table) {
+        Schema::create('wallet_bonus', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('member_id');
             $table->unsignedBigInteger('transaction_type_id');
-            $table->unsignedBigInteger('sender_member_id');
-            $table->unsignedBigInteger('receiver_member_id');
             $table->string('txcode', 50)->index();
             $table->decimal('credit', 8, 2)->nullable()->index();
             $table->decimal('debit', 8, 2)->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('member_id')->references('id')->on('members');
+            $table->foreign('transaction_type_id')->references('id')->on('transaction_type');
         });
     }
 
@@ -34,6 +35,11 @@ class CreateMemberWalletBonusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('member_wallet_bonus');
+        Schema::table('wallet_bonus', function (Blueprint $table) {
+            $table->dropForeign(['member_id']);
+            $table->dropForeign(['transaction_type_id']);
+        });
+
+        Schema::dropIfExists('wallet_bonus');
     }
 }

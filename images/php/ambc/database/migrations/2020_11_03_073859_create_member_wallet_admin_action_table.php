@@ -13,9 +13,9 @@ class CreateMemberWalletAdminActionTable extends Migration
      */
     public function up()
     {
-        Schema::create('member_wallet_balances_admin_action', function (Blueprint $table) {
+        Schema::create('admin_wallet_balances_action', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('member_wallet_balance_id');
+            $table->unsignedBigInteger('wallet_balance_id');
             $table->dateTime('admin_updated_at');
             $table->unsignedBigInteger('admin_id');
             $table->string('remarks', 255)->index();
@@ -32,10 +32,10 @@ class CreateMemberWalletAdminActionTable extends Migration
      */
     public function down()
     {
-        Schema::table('member_wallet_balances_admin_action', function (Blueprint $table) {
+        Schema::table('admin_wallet_balances_action', function (Blueprint $table) {
             $table->dropForeign(['admin_id']);
         });
 
-        Schema::dropIfExists('member_wallet_balance_admin_action');
+        Schema::dropIfExists('admin_wallet_balances_action');
     }
 }

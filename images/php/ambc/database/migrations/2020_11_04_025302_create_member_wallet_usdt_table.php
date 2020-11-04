@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMemberWalletBalance extends Migration
+class CreateMemberWalletUsdtTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,18 @@ class CreateMemberWalletBalance extends Migration
      */
     public function up()
     {
-        Schema::create('wallet_balances', function (Blueprint $table) {
+        Schema::create('wallet_usdt', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('member_id');
-            $table->decimal("roi", 10, 2)->index();
-            $table->decimal("bonus", 10, 2)->index();
-            $table->decimal("ambc", 10, 2)->index();
-            $table->decimal("usdt", 10, 2)->index();
+            $table->unsignedBigInteger('transaction_type_id');
+            $table->string('txcode', 50)->index();
+            $table->decimal('credit', 8, 2)->nullable()->index();
+            $table->decimal('debit', 8, 2)->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('member_id')->references('id')->on('members');
+            $table->foreign('transaction_type_id')->references('id')->on('transaction_type');
         });
     }
 
@@ -34,10 +35,10 @@ class CreateMemberWalletBalance extends Migration
      */
     public function down()
     {
-        Schema::table('wallet_balances', function (Blueprint $table) {
+        Schema::table('wallet_usdt', function (Blueprint $table) {
             $table->dropForeign(['member_id']);
+            $table->dropForeign(['transaction_type_id']);
         });
-
-        Schema::dropIfExists('wallet_balances');
+        Schema::dropIfExists('wallet_usdt');
     }
 }
