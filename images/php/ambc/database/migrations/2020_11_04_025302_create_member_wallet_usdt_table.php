@@ -13,7 +13,7 @@ class CreateMemberWalletUsdtTable extends Migration
      */
     public function up()
     {
-        Schema::create('wallet_usdt', function (Blueprint $table) {
+        Schema::create('member_usdt_transaction', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('member_id');
             $table->unsignedBigInteger('transaction_type_id');
@@ -35,10 +35,10 @@ class CreateMemberWalletUsdtTable extends Migration
      */
     public function down()
     {
-        Schema::table('wallet_usdt', function (Blueprint $table) {
+        Schema::table('member_usdt_transaction', function (Blueprint $table) {
             $table->dropForeign(['member_id']);
             $table->dropForeign(['transaction_type_id']);
         });
-        Schema::dropIfExists('wallet_usdt');
+        Schema::dropIfExists('member_usdt_transaction');
     }
 }

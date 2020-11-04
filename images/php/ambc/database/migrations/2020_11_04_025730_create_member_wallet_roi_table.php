@@ -13,7 +13,7 @@ class CreateMemberWalletRoiTable extends Migration
      */
     public function up()
     {
-        Schema::create('wallet_roi', function (Blueprint $table) {
+        Schema::create('member_roi_transaction', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('member_id');
             $table->unsignedBigInteger('transaction_type_id');
@@ -35,10 +35,10 @@ class CreateMemberWalletRoiTable extends Migration
      */
     public function down()
     {
-        Schema::table('wallet_roi', function (Blueprint $table) {
+        Schema::table('member_roi_transaction', function (Blueprint $table) {
             $table->dropForeign(['member_id']);
             $table->dropForeign(['transaction_type_id']);
         });
-        Schema::dropIfExists('wallet_roi');
+        Schema::dropIfExists('member_roi_transaction');
     }
 }

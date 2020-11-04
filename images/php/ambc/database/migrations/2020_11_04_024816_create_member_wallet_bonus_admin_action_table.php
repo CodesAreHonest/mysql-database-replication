@@ -13,15 +13,15 @@ class CreateMemberWalletBonusAdminActionTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin_wallet_bonus', function (Blueprint $table) {
+        Schema::create('admin_bonus_transaction', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('wallet_bonus_id');
+            $table->unsignedBigInteger('member_bonus_transaction_id');
             $table->string('remarks', 255)->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('wallet_bonus_id')->references('id')
-                ->on('wallet_bonus');
+            $table->foreign('member_bonus_transaction_id')->references('id')
+                ->on('member_bonus_transaction');
         });
     }
 
@@ -32,10 +32,10 @@ class CreateMemberWalletBonusAdminActionTable extends Migration
      */
     public function down()
     {
-        Schema::table('admin_wallet_bonus', function (Blueprint $table) {
-            $table->dropForeign(['wallet_bonus_id']);
+        Schema::table('admin_bonus_transaction', function (Blueprint $table) {
+            $table->dropForeign(['member_bonus_transaction_id']);
         });
 
-        Schema::dropIfExists('admin_wallet_bonus');
+        Schema::dropIfExists('admin_bonus_transaction');
     }
 }

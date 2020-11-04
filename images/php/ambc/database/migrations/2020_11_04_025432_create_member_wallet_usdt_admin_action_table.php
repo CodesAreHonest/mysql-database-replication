@@ -13,16 +13,16 @@ class CreateMemberWalletUsdtAdminActionTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin_wallet_usdt', function (Blueprint $table) {
+        Schema::create('admin_usdt_transaction', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('wallet_usdt_id');
+            $table->unsignedBigInteger('member_usdt_transaction_id');
             $table->string('remarks', 255)->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('wallet_usdt_id')
+            $table->foreign('member_usdt_transaction_id')
                 ->references('id')
-                ->on('wallet_usdt');
+                ->on('member_usdt_transaction');
         });
     }
 
@@ -33,9 +33,9 @@ class CreateMemberWalletUsdtAdminActionTable extends Migration
      */
     public function down()
     {
-        Schema::table('admin_wallet_usdt', function (Blueprint $table) {
-            $table->dropForeign(['wallet_usdt_id']);
+        Schema::table('admin_usdt_transaction', function (Blueprint $table) {
+            $table->dropForeign(['member_usdt_transaction_id']);
         });
-        Schema::dropIfExists('admin_wallet_usdt');
+        Schema::dropIfExists('admin_usdt_transaction');
     }
 }

@@ -5,11 +5,11 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class WalletRoi extends Model
+class MemberRoiTransaction extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'wallet_roi';
+    protected $table = 'member_roi_transaction';
 
     protected $fillable = [
         'member_id',

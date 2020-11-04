@@ -13,7 +13,7 @@ class CreateWalletUsdtTransferTable extends Migration
      */
     public function up()
     {
-        Schema::create('wallet_usdt_transfer', function (Blueprint $table) {
+        Schema::create('member_usdt_transfer_transaction', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('sender_member_id');
             $table->unsignedBigInteger('receiver_member_id');
@@ -26,10 +26,10 @@ class CreateWalletUsdtTransferTable extends Migration
 
             $table->foreign('sender_member_id')->references('id')->on('members');
             $table->foreign('receiver_member_id')->references('id')->on('members');
-            $table->foreign('sender_transaction_id')->references('id')->on('wallet_usdt');
-            $table->foreign('receiver_transaction_id')->references('id')->on('wallet_usdt');
-            $table->foreign('sender_fee_deduction_transaction_id')->references('id')->on('wallet_usdt');
-            $table->foreign('system_receive_fee_transaction_id')->references('id')->on('wallet_usdt');
+            $table->foreign('sender_transaction_id')->references('id')->on('member_usdt_transaction');
+            $table->foreign('receiver_transaction_id')->references('id')->on('member_usdt_transaction');
+            $table->foreign('sender_fee_deduction_transaction_id', 'sender_fee_fk')->references('id')->on('member_usdt_transaction');
+            $table->foreign('system_receive_fee_transaction_id', 'system_receive_fee_fk')->references('id')->on('member_usdt_transaction');
         });
     }
 
@@ -40,15 +40,15 @@ class CreateWalletUsdtTransferTable extends Migration
      */
     public function down()
     {
-        Schema::table('wallet_usdt_transfer', function (Blueprint $table) {
+        Schema::table('member_usdt_transfer_transaction', function (Blueprint $table) {
             $table->dropForeign(['sender_member_id']);
             $table->dropForeign(['receiver_member_id']);
             $table->dropForeign(['sender_transaction_id']);
             $table->dropForeign(['receiver_transaction_id']);
-            $table->dropForeign(['sender_fee_deduction_transaction_id']);
-            $table->dropForeign(['system_receive_fee_transaction_id']);
+            $table->dropForeign('sender_fee_fk');
+            $table->dropForeign('system_receive_fee_fk');
         });
 
-        Schema::dropIfExists('wallet_usdt_transfer');
+        Schema::dropIfExists('member_usdt_transfer_transaction');
     }
 }

@@ -5,11 +5,11 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class WalletUsdtTransfer extends Model
+class MemberUsdtTransferTransaction extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'wallet_usdt_transfer';
+    protected $table = 'member_usdt_transfer_transaction';
 
     protected $fillable = [
         'sender_member_id',

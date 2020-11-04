@@ -5,11 +5,11 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class WalletBonus extends Model
+class MemberBonusTransaction extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'wallet_bonus';
+    protected $table = 'member_bonus_transaction';
 
     protected $fillable = [
         'member_id',

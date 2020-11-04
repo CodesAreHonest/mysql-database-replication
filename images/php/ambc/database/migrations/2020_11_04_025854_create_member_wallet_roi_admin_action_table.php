@@ -13,16 +13,16 @@ class CreateMemberWalletRoiAdminActionTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin_wallet_roi', function (Blueprint $table) {
+        Schema::create('admin_roi_transaction', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('wallet_roi_id');
+            $table->unsignedBigInteger('member_roi_transaction_id');
             $table->string('remarks', 255)->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('wallet_roi_id')
+            $table->foreign('member_roi_transaction_id')
                 ->references('id')
-                ->on('wallet_roi');
+                ->on('member_roi_transaction');
         });
     }
 
@@ -33,9 +33,9 @@ class CreateMemberWalletRoiAdminActionTable extends Migration
      */
     public function down()
     {
-        Schema::table('admin_wallet_roi', function (Blueprint $table) {
-            $table->dropForeign(['wallet_roi_id']);
+        Schema::table('admin_roi_transaction', function (Blueprint $table) {
+            $table->dropForeign(['member_roi_transaction_id']);
         });
-        Schema::dropIfExists('admin_wallet_roi');
+        Schema::dropIfExists('admin_roi_transaction');
     }
 }
