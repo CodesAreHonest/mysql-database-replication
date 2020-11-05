@@ -17,4 +17,10 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/member/register', 'MemberController@register');
+$router->group(['prefix' => 'member'], function () use ($router) {
+    $router->post('/register', 'MemberController@register');
+});
+
+$router->group(['prefix' => 'wallet'], function () use ($router) {
+    $router->get('/balance', 'WalletController@balance');
+});
