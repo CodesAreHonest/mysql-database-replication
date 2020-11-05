@@ -13,11 +13,15 @@ class Member extends Model
 
     protected array $fillable = [
         'first_name',
-        'last_name '
+        'last_name'
     ];
 
     public function walletBalance()
     {
-        return $this->belongsTo(WalletBalance::class);
+        return $this->hasOne(
+            WalletBalance::class,
+            'member_id',
+            'id'
+        );
     }
 }

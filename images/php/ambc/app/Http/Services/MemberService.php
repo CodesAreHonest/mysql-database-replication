@@ -4,7 +4,7 @@ namespace App\Http\Services;
 
 use App\Exceptions\InternalServerError;
 use App\Http\Repositories\MemberRepository;
-use Mockery\Exception;
+use Exception;
 
 class MemberService
 {
@@ -24,16 +24,14 @@ class MemberService
      * @return array
      * @throws InternalServerError
      */
-    public function register(string $firstName, string $lastName): array
+    public function registerAccount(string $firstName, string $lastName): array
     {
-
         try {
-            $response = $this->memberRepository->createWithWallet($firstName, $lastName);
+            $this->memberRepository->createWithWallet($firstName, $lastName);
 
             return [
                 'code'    => 200,
-                'message' => 'success',
-                'data'    => $response
+                'message' => 'success'
             ];
         } catch (Exception $exception) {
             throw new InternalServerError($exception);

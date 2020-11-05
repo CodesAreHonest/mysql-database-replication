@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberRepository
 {
-
     private Builder $member;
 
     public function __construct(Member $member)
