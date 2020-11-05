@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,9 +9,9 @@ class MemberUsdtTransaction extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'member_usdt_transaction';
+    protected string $table = 'member_usdt_transaction';
 
-    protected $fillable = [
+    protected array $fillable = [
         'member_id',
         'transaction_type_id',
         'txcode',

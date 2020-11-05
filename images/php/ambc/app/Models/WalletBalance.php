@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,9 +9,9 @@ class WalletBalance extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'wallet_balances';
+    protected string $table = 'wallet_balances';
 
-    protected $fillable = [
+    protected array $fillable = [
         'member_id',
         'roi',
         'bonus',

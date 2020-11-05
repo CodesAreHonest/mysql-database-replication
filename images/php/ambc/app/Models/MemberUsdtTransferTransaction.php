@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,9 +9,9 @@ class MemberUsdtTransferTransaction extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'member_usdt_transfer_transaction';
+    protected string $table = 'member_usdt_transfer_transaction';
 
-    protected $fillable = [
+    protected array $fillable = [
         'sender_member_id',
         'receiver_member_id',
         'sender_transaction_id',
@@ -32,21 +32,21 @@ class MemberUsdtTransferTransaction extends Model
 
     public function senderTransaction()
     {
-        return $this->hasOne(WalletUsdt::class, 'sender_transaction_id', 'id');
+        return $this->hasOne(MemberUsdtTransaction::class, 'sender_transaction_id', 'id');
     }
 
     public function receiverTransaction()
     {
-        return $this->hasOne(WalletUsdt::class, 'receiver_transaction_id', 'id');
+        return $this->hasOne(MemberUsdtTransaction::class, 'receiver_transaction_id', 'id');
     }
 
     public function senderFeeDeductionTransation()
     {
-        return $this->hasOne(WalletUsdt::class, 'sender_fee_deduction_transaction_id', 'id');
+        return $this->hasOne(MemberUsdtTransaction::class, 'sender_fee_deduction_transaction_id', 'id');
     }
 
     public function systemReceiveFeeTransaction()
     {
-        return $this->hasOne(WalletUsdt::class, 'system_receive_fee_transaction_id', 'id');
+        return $this->hasOne(MemberUsdtTransaction::class, 'system_receive_fee_transaction_id', 'id');
     }
 }
