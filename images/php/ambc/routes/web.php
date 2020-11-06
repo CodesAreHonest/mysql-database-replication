@@ -1,6 +1,6 @@
 <?php
 
-/** @var \Laravel\Lumen\Routing\Router $router */
+/** @var Router $router */
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +12,8 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+
+use Laravel\Lumen\Routing\Router;
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
@@ -28,4 +30,5 @@ $router->group(['prefix' => 'wallet'], function () use ($router) {
 $router->group(['prefix' => 'transaction'], function () use ($router) {
     $router->post('/roi', 'TransactionController@roi');
     $router->post('/bonus', 'TransactionController@bonus');
+    $router->post('/topUp', 'TransactionController@topUp');
 });

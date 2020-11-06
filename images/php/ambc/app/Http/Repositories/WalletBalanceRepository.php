@@ -60,4 +60,17 @@ class WalletBalanceRepository
             ->increment('bonus', $positiveAmount);
     }
 
+    /**
+     * @param int   $memberId
+     * @param float $amount
+     */
+    public function debitUsdt(int $memberId, float $amount)
+    {
+        $positiveAmount = abs($amount);
+
+        $this->walletBalance
+            ->where('member_id', $memberId)
+            ->increment('usdt', $positiveAmount);
+    }
+
 }
