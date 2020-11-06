@@ -34,4 +34,17 @@ class WalletBalanceRepository
         return $this->walletBalance->find($memberId, $walletTypes);
     }
 
+    /**
+     * @param int   $memberId
+     * @param float $amount
+     */
+    public function debitRoi(int $memberId, float $amount)
+    {
+        $positiveAmount = abs($amount);
+
+        $this->walletBalance
+            ->where('member_id', $memberId)
+            ->increment('roi', $positiveAmount);
+    }
+
 }

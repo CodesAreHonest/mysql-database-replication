@@ -24,3 +24,7 @@ $router->group(['prefix' => 'member'], function () use ($router) {
 $router->group(['prefix' => 'wallet'], function () use ($router) {
     $router->get('/balance', 'WalletController@balance');
 });
+
+$router->group(['prefix' => 'transaction'], function () use ($router) {
+    $router->post('/roi', 'TransactionController@roi');
+});
