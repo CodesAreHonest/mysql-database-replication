@@ -31,4 +31,5 @@ $router->group(['prefix' => 'transaction'], function () use ($router) {
     $router->post('/roi', 'TransactionController@roi');
     $router->post('/bonus', 'TransactionController@bonus');
     $router->post('/topUp', 'TransactionController@topUp');
+    $router->post('/withdrawal', 'TransactionController@withdrawal');
 });

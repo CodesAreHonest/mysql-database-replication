@@ -70,7 +70,33 @@ class WalletBalanceRepository
 
         $this->walletBalance
             ->where('member_id', $memberId)
-            ->increment('usdt', $positiveAmount);
+            ->decrement('usdt', $positiveAmount);
+    }
+
+    /**
+     * @param int   $memberId
+     * @param float $amount
+     */
+    public function creditUsdt(int $memberId, float $amount)
+    {
+        $negativeAmount = -abs($amount);
+
+        $this->walletBalance
+            ->where('member_id', $memberId)
+            ->decrement('usdt', $negativeAmount);
+    }
+
+    public function isSufficient(int $memberId, string $walletType, float $deductionAmount)
+    {
+        $lowerWalletType         = strtolower($walletType);
+        $positiveDeductionAmount = abs($deductionAmount);
+
+        $isSufficient = $this->walletBalance
+            ->where('member_id', $memberId)
+            ->where($lowerWalletType, '>=', $positiveDeductionAmount)
+            ->exists();
+
+        return $isSufficient;
     }
 
 }

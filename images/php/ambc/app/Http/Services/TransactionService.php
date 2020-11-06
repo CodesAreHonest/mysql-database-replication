@@ -4,6 +4,7 @@
 namespace App\Http\Services;
 
 
+use App\Exceptions\Forbidden;
 use App\Exceptions\InternalServerError;
 use App\Http\Repositories\MemberBonusTransactionRepository;
 use App\Http\Repositories\MemberRoiTransactionRepository;
@@ -122,7 +123,50 @@ class TransactionService
                 $exception->getMessage()
             );
         }
+    }
 
+    /**
+     * @param int   $memberId
+     * @param float $amount
+     *
+     * @return array
+     * @throws Forbidden
+     * @throws InternalServerError
+     */
+    public function withdrawal(int $memberId, float $amount)
+    {
+
+        $isBalanceSufficient = $this->walletBalanceRepository
+            ->isSufficient($memberId, 'usdt', $amount);
+
+        if ( !$isBalanceSufficient ) {
+            throw new Forbidden(
+                "INSUFFICIENT_BALANCE",
+                config('error.server.CLIENT_EXCEPTION'),
+                "the balance of $memberId is insufficient."
+            );
+        }
+
+        try {
+            $transactionType   = $this->transactionTypeRepository->find('withdrawal');
+            $transactionTypeId = $transactionType->id;
+
+            $this->memberUsdtTransactionRepository->debit(
+                $memberId, $amount, $transactionTypeId
+            );
+            $this->walletBalanceRepository->debitUsdt($memberId, $amount);
+
+            return [
+                'code'    => 200,
+                'message' => 'success'
+            ];
+        } catch (Exception $exception) {
+            throw new InternalServerError(
+                'INTERNAL_SERVER_ERROR',
+                config('error.server.SERVER_EXCEPTION'),
+                $exception->getMessage()
+            );
+        }
     }
 
 }

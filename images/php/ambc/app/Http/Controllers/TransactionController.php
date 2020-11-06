@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\BadGateway;
+use App\Exceptions\Forbidden;
 use App\Exceptions\InternalServerError;
 use App\Exceptions\UnprocessableEntity;
 use App\Http\Services\TransactionService;
@@ -103,6 +104,37 @@ class TransactionController extends Controller
         $amount   = (float)$request->input('amount');
 
         $response = $this->transactionService->topUp($memberId, $amount);
+
+        switch ($response['code']) {
+            case 200:
+                return response()->json($response, 200);
+            default:
+                throw new BadGateway();
+        }
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws BadGateway
+     * @throws InternalServerError
+     * @throws UnprocessableEntity
+     * @throws Forbidden
+     */
+    public function withdrawal(Request $request)
+    {
+        $rules = [
+            'memberId' => 'required|int|exists:members,id',
+            'amount'   => 'required|numeric|min:0|not_in:0'
+        ];
+
+        $this->validator($request->all(), $rules);
+
+        $memberId = (int)$request->input('memberId');
+        $amount   = (float)$request->input('amount');
+
+        $response = $this->transactionService->withdrawal($memberId, $amount);
 
         switch ($response['code']) {
             case 200:
