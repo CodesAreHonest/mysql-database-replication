@@ -143,4 +143,39 @@ class TransactionController extends Controller
                 throw new BadGateway();
         }
     }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws BadGateway
+     * @throws Forbidden
+     * @throws InternalServerError
+     * @throws UnprocessableEntity
+     */
+    public function convert(Request $request)
+    {
+        $rules = [
+            'type'     => 'required|string|in:roi,bonus',
+            'amount'   => 'required|numeric|min:0|not_in:0',
+            'memberId' => 'required|int|exists:members,id',
+        ];
+
+        $this->validator($request->all(), $rules);
+
+        $type     = $request->input('type');
+        $amount   = $request->input('amount');
+        $memberId = $request->input('memberId');
+
+        $response = $this->transactionService->convert($type, $memberId, $amount);
+
+        switch ($response['code']) {
+            case 200:
+                return response()->json($response, 200);
+            default:
+                throw new BadGateway();
+        }
+
+
+    }
 }

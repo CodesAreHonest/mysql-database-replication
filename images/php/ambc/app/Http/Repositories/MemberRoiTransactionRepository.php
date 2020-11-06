@@ -34,4 +34,19 @@ class MemberRoiTransactionRepository
     {
         return "roi_" . md5(rand());
     }
+
+    public function credit(int $memberId, float $creditAmount, int $transactionTypeId)
+    {
+        $positiveCreditAmount = abs($creditAmount);
+
+        $attributes = [
+            'member_id'           => $memberId,
+            'transaction_type_id' => $transactionTypeId,
+            'txcode'              => $this->generateTxCode(),
+            'debit'               => 0,
+            'credit'              => $positiveCreditAmount
+        ];
+
+        return $this->memberRoiTransaction->create($attributes);
+    }
 }

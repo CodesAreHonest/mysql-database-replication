@@ -9,6 +9,7 @@ use App\Exceptions\InternalServerError;
 use App\Http\Repositories\MemberBonusTransactionRepository;
 use App\Http\Repositories\MemberRoiTransactionRepository;
 use App\Http\Repositories\MemberUsdtTransactionRepository;
+use App\Http\Repositories\MemberWalletConversionRepository;
 use App\Http\Repositories\TransactionTypeRepository;
 use App\Http\Repositories\WalletBalanceRepository;
 use Exception;
@@ -20,13 +21,15 @@ class TransactionService
     private MemberBonusTransactionRepository $memberBonusTransactionRepository;
     private MemberUsdtTransactionRepository $memberUsdtTransactionRepository;
     private WalletBalanceRepository $walletBalanceRepository;
+    private MemberWalletConversionRepository $memberWalletConversionRepository;
 
     public function __construct(
         TransactionTypeRepository $transactionTypeRepository,
         MemberRoiTransactionRepository $memberRoiTransactionRepository,
         MemberBonusTransactionRepository $memberBonusTransactionRepository,
         WalletBalanceRepository $walletBalanceRepository,
-        MemberUsdtTransactionRepository $memberUsdtTransactionRepository
+        MemberUsdtTransactionRepository $memberUsdtTransactionRepository,
+        MemberWalletConversionRepository $memberWalletConversionRepository
     )
     {
         $this->transactionTypeRepository        = $transactionTypeRepository;
@@ -34,6 +37,7 @@ class TransactionService
         $this->memberBonusTransactionRepository = $memberBonusTransactionRepository;
         $this->walletBalanceRepository          = $walletBalanceRepository;
         $this->memberUsdtTransactionRepository  = $memberUsdtTransactionRepository;
+        $this->memberWalletConversionRepository = $memberWalletConversionRepository;
     }
 
     /**
@@ -169,4 +173,62 @@ class TransactionService
         }
     }
 
+    /**
+     * @param string $type
+     * @param float  $amount
+     * @param int    $memberId
+     *
+     * @return array
+     * @throws Forbidden
+     * @throws InternalServerError
+     */
+    public function convert(string $type, float $amount, int $memberId)
+    {
+        $isBalanceSufficient = $this->walletBalanceRepository
+            ->isSufficient($memberId, $type, $amount);
+
+        if ( !$isBalanceSufficient ) {
+            throw new Forbidden(
+                "INSUFFICIENT_BALANCE",
+                config('error.server.CLIENT_EXCEPTION'),
+                "the $type balance of $memberId is insufficient."
+            );
+        }
+
+        try {
+
+            $transactionType   = $this->transactionTypeRepository->find('convert');
+            $transactionTypeId = $transactionType->id;
+
+            if ( $type === "bonus" ) {
+                $senderTransaction = $this->memberBonusTransactionRepository->credit($memberId, $amount, $transactionTypeId);
+            }
+
+            if ( $type === "roi" ) {
+                $senderTransaction = $this->memberRoiTransactionRepository->credit(
+                    $memberId, $amount, $transactionTypeId
+                );
+            }
+
+            $receiverTransaction = $this->memberUsdtTransactionRepository->debit($memberId, $amount, $transactionTypeId);
+            $this->walletBalanceRepository->convert($memberId, $type, $amount);
+
+            $senderTransactionId   = $senderTransaction->id;
+            $receiverTransactionId = $receiverTransaction->id;
+            $this->memberWalletConversionRepository->create(
+                $memberId, $type, $senderTransactionId, $receiverTransactionId
+            );
+
+            return [
+                'code'    => 200,
+                'message' => 'success'
+            ];
+        } catch (Exception $exception) {
+            throw new InternalServerError(
+                'INTERNAL_SERVER_ERROR',
+                config('error.server.SERVER_EXCEPTION'),
+                $exception->getMessage()
+            );
+        }
+    }
 }

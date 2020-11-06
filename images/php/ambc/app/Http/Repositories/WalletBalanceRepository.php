@@ -86,6 +86,26 @@ class WalletBalanceRepository
             ->decrement('usdt', $negativeAmount);
     }
 
+    /**
+     * @param int    $memberId
+     * @param string $targetWallet
+     * @param float  $convertAmount
+     */
+    public function convert(int $memberId, string $targetWallet, float $convertAmount)
+    {
+        $destinationWallet  = 'usdt';
+        $memberWallet       = $this->walletBalance->find($memberId);
+        $targetBalance      = $memberWallet[$targetWallet] - $convertAmount;
+        $destinationBalance = $memberWallet[$destinationWallet] + $convertAmount;
+
+        $this->walletBalance->where('member_id', $memberId)
+            ->update([
+                $destinationWallet => $destinationBalance,
+                $targetWallet      => $targetBalance
+            ]);
+
+    }
+
     public function isSufficient(int $memberId, string $walletType, float $deductionAmount)
     {
         $lowerWalletType         = strtolower($walletType);

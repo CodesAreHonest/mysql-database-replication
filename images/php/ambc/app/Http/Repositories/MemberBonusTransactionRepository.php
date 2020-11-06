@@ -41,4 +41,24 @@ class MemberBonusTransactionRepository
     {
         return "bonus_" . md5(rand());
     }
+
+    /**
+     * @param int   $memberId
+     * @param float $creditAmount
+     * @param int   $transactionTypeId
+     *
+     * @return Builder|Model
+     */
+    public function credit(int $memberId, float $creditAmount, int $transactionTypeId)
+    {
+        $attributes = [
+            'member_id'           => $memberId,
+            'transaction_type_id' => $transactionTypeId,
+            'txcode'              => $this->generateTxCode(),
+            'debit'               => 0,
+            'credit'              => $creditAmount
+        ];
+
+        return $this->memberBonusTransaction->create($attributes);
+    }
 }
