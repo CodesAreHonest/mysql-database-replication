@@ -175,7 +175,44 @@ class TransactionController extends Controller
             default:
                 throw new BadGateway();
         }
+    }
 
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws BadGateway
+     * @throws InternalServerError
+     * @throws UnprocessableEntity
+     */
+    public function transfer(Request $request)
+    {
+        $rules = [
+            'sender'   => 'required|int|exists:members,id',
+            'receiver' => 'required|int|exists:members,id',
+            'amount'   => 'required|numeric|min:0|not_in:0',
+            'fee'      => 'nullable|numeric'
+        ];
 
+        $this->validator($request->all(), $rules);
+
+        $senderMemberId   = $request->input('sender');
+        $receiverMemberId = $request->input('receiver');
+        $amount           = $request->input('amount');
+        $fee              = $request->input('fee', 0);
+
+        $response = $this->transactionService->transfer(
+            $senderMemberId,
+            $receiverMemberId,
+            $amount,
+            $fee
+        );
+
+        switch ($response['code']) {
+            case 200:
+                return response()->json($response, 200);
+            default:
+                throw new BadGateway();
+        }
     }
 }

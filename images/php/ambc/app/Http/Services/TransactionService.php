@@ -9,6 +9,7 @@ use App\Exceptions\InternalServerError;
 use App\Http\Repositories\MemberBonusTransactionRepository;
 use App\Http\Repositories\MemberRoiTransactionRepository;
 use App\Http\Repositories\MemberUsdtTransactionRepository;
+use App\Http\Repositories\MemberUsdtTransferTransactionRepository;
 use App\Http\Repositories\MemberWalletConversionRepository;
 use App\Http\Repositories\TransactionTypeRepository;
 use App\Http\Repositories\WalletBalanceRepository;
@@ -22,6 +23,7 @@ class TransactionService
     private MemberUsdtTransactionRepository $memberUsdtTransactionRepository;
     private WalletBalanceRepository $walletBalanceRepository;
     private MemberWalletConversionRepository $memberWalletConversionRepository;
+    private MemberUsdtTransferTransactionRepository $memberUsdtTransferTransactionRepository;
 
     public function __construct(
         TransactionTypeRepository $transactionTypeRepository,
@@ -29,16 +31,19 @@ class TransactionService
         MemberBonusTransactionRepository $memberBonusTransactionRepository,
         WalletBalanceRepository $walletBalanceRepository,
         MemberUsdtTransactionRepository $memberUsdtTransactionRepository,
-        MemberWalletConversionRepository $memberWalletConversionRepository
+        MemberWalletConversionRepository $memberWalletConversionRepository,
+        MemberUsdtTransferTransactionRepository $memberUsdtTransferTransactionRepository
     )
     {
-        $this->transactionTypeRepository        = $transactionTypeRepository;
-        $this->memberRoiTransactionRepository   = $memberRoiTransactionRepository;
-        $this->memberBonusTransactionRepository = $memberBonusTransactionRepository;
-        $this->walletBalanceRepository          = $walletBalanceRepository;
-        $this->memberUsdtTransactionRepository  = $memberUsdtTransactionRepository;
-        $this->memberWalletConversionRepository = $memberWalletConversionRepository;
+        $this->transactionTypeRepository               = $transactionTypeRepository;
+        $this->memberRoiTransactionRepository          = $memberRoiTransactionRepository;
+        $this->memberBonusTransactionRepository        = $memberBonusTransactionRepository;
+        $this->walletBalanceRepository                 = $walletBalanceRepository;
+        $this->memberUsdtTransactionRepository         = $memberUsdtTransactionRepository;
+        $this->memberWalletConversionRepository        = $memberWalletConversionRepository;
+        $this->memberUsdtTransferTransactionRepository = $memberUsdtTransferTransactionRepository;
     }
+
 
     /**
      * @param int   $memberId
@@ -230,5 +235,96 @@ class TransactionService
                 $exception->getMessage()
             );
         }
+    }
+
+    /**
+     * @param int       $senderMemberId
+     * @param int       $receiverMemberId
+     * @param float     $amount
+     * @param float|int $fee
+     *
+     * @return array
+     * @throws InternalServerError|Forbidden
+     */
+    public function transfer(
+        int $senderMemberId,
+        int $receiverMemberId,
+        float $amount,
+        float $fee = 0
+    )
+    {
+
+        // verify whether is sufficient balance
+        $totalDeductionAmount = $amount + $fee;
+        $isSufficient         = $this->walletBalanceRepository->isSufficient(
+            $senderMemberId,
+            'usdt',
+            $totalDeductionAmount
+        );
+
+        if ( !$isSufficient ) {
+            throw new Forbidden(
+                "INSUFFICIENT_BALANCE",
+                config('error.server.CLIENT_EXCEPTION'),
+                "the balance of $senderMemberId is insufficient."
+            );
+        }
+
+        // transfer transaction type
+        $transferTransType = $this->transactionTypeRepository->find('transfer');
+        $transferTypeId    = $transferTransType->id;
+
+        // fee transaction type
+        $feeTransType   = $this->transactionTypeRepository->find('fee');
+        $feeTransTypeId = $feeTransType->id;
+
+        try {
+            $senderTransation    = $this->memberUsdtTransactionRepository->credit(
+                $senderMemberId, $amount, $transferTypeId
+            );
+            $receiverTransaction = $this->memberUsdtTransactionRepository->debit(
+                $receiverMemberId, $amount, $transferTypeId
+            );
+
+            if ( $fee !== 0 ) {
+                $senderFeeDeductionTransaction = $this
+                    ->memberUsdtTransactionRepository
+                    ->credit(
+                        $senderMemberId, $fee, $feeTransTypeId
+                    );
+
+                $systemMemberId              = config('settings.systemMemberId');
+                $systemReceiveFeeTransaction = $this->memberUsdtTransactionRepository
+                    ->debit(
+                        $systemMemberId, $fee, $feeTransTypeId
+                    );
+            }
+
+            $senderTransationId    = $senderTransation->id;
+            $receiverTransactionId = $receiverTransaction->id;
+            $senderFeeDeductionId  = $senderFeeDeductionTransaction->id ?? null;
+            $systemReceiveFeeId    = $systemReceiveFeeTransaction->id ?? null;
+
+            $this->memberUsdtTransferTransactionRepository->create(
+                $senderMemberId,
+                $receiverMemberId,
+                $senderTransationId,
+                $receiverTransactionId,
+                $senderFeeDeductionId,
+                $systemReceiveFeeId
+            );
+
+            return [
+                'code'    => 200,
+                'message' => 'success'
+            ];
+        } catch (Exception $exception) {
+            throw new InternalServerError(
+                'INTERNAL_SERVER_ERROR',
+                config('error.server.SERVER_EXCEPTION'),
+                $exception->getMessage()
+            );
+        }
+
     }
 }

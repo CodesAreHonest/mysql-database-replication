@@ -33,4 +33,5 @@ $router->group(['prefix' => 'transaction'], function () use ($router) {
     $router->post('/topUp', 'TransactionController@topUp');
     $router->post('/withdrawal', 'TransactionController@withdrawal');
     $router->post('/convert', 'TransactionController@convert');
+    $router->post('/transfer', 'TransactionController@transfer');
 });
