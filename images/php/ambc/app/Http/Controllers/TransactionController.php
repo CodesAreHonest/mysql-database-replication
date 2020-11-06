@@ -38,7 +38,7 @@ class TransactionController extends Controller
         $memberId = (int)$request->input('memberId');
         $amount   = (float)$request->input('amount');
 
-        $response = $this->transactionService->roi(
+        $response = $this->transactionService->debitRoi(
             $memberId, $amount
         );
 
@@ -48,6 +48,37 @@ class TransactionController extends Controller
             default:
                 throw new BadGateway();
         }
+    }
 
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws BadGateway
+     * @throws InternalServerError
+     * @throws UnprocessableEntity
+     */
+    public function bonus(Request $request)
+    {
+        $rules = [
+            'memberId' => 'required|int|exists:members,id',
+            'amount'   => 'required|numeric|min:0|not_in:0'
+        ];
+
+        $this->validator($request->all(), $rules);
+
+        $memberId = (int)$request->input('memberId');
+        $amount   = (float)$request->input('amount');
+
+        $response = $this->transactionService->debitBonus(
+            $memberId, $amount
+        );
+
+        switch ($response['code']) {
+            case 200:
+                return response()->json($response, 200);
+            default:
+                throw new BadGateway();
+        }
     }
 }

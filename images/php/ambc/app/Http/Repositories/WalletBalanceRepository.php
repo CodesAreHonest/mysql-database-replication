@@ -47,4 +47,17 @@ class WalletBalanceRepository
             ->increment('roi', $positiveAmount);
     }
 
+    /**
+     * @param int   $memberId
+     * @param float $amount
+     */
+    public function debitBonus(int $memberId, float $amount)
+    {
+        $positiveAmount = abs($amount);
+
+        $this->walletBalance
+            ->where('member_id', $memberId)
+            ->increment('bonus', $positiveAmount);
+    }
+
 }

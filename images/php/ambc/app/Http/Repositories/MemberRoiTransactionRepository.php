@@ -22,7 +22,7 @@ class MemberRoiTransactionRepository
         $attributes = [
             'member_id'           => $memberId,
             'transaction_type_id' => $transactionTypeId,
-            'txcode'              => $this->generateTxcode(),
+            'txcode'              => $this->generateTxCode(),
             'debit'               => $debitAmount,
             'credit'              => 0
         ];
@@ -30,7 +30,7 @@ class MemberRoiTransactionRepository
         return $this->memberRoiTransaction->create($attributes);
     }
 
-    private function generateTxcode()
+    private function generateTxCode()
     {
         return "roi_" . md5(rand());
     }
