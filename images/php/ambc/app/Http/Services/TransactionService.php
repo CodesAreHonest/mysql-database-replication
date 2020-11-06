@@ -36,7 +36,6 @@ class TransactionService
      */
     public function roi(int $memberId, float $amount)
     {
-
         try {
             $transactionType   = $this->transactionTypeRepository->find('roi');
             $transactionTypeId = $transactionType->id;
