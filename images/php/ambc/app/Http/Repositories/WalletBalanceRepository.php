@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class WalletBalanceRepository
 {
-    private Builder $walletBalance;
+    private WalletBalance $walletBalance;
 
     public function __construct(WalletBalance $walletBalance)
     {
-        $this->walletBalance = $walletBalance->query();
+        $this->walletBalance = $walletBalance;
     }
 
     /**
@@ -51,6 +51,20 @@ class WalletBalanceRepository
      * @param int   $memberId
      * @param float $amount
      */
+    public function creditBonus(int $memberId, float $amount)
+    {
+
+        $positiveAmount = abs($amount);
+
+        $this->walletBalance
+            ->where('member_id', $memberId)
+            ->decrement('bonus', $positiveAmount);
+    }
+
+    /**
+     * @param int   $memberId
+     * @param float $amount
+     */
     public function debitBonus(int $memberId, float $amount)
     {
         $positiveAmount = abs($amount);
@@ -70,7 +84,7 @@ class WalletBalanceRepository
 
         $this->walletBalance
             ->where('member_id', $memberId)
-            ->decrement('usdt', $positiveAmount);
+            ->increment('usdt', $positiveAmount);
     }
 
     /**
@@ -79,11 +93,24 @@ class WalletBalanceRepository
      */
     public function creditUsdt(int $memberId, float $amount)
     {
-        $negativeAmount = -abs($amount);
+        $positiveAmount = abs($amount);
 
         $this->walletBalance
             ->where('member_id', $memberId)
-            ->decrement('usdt', $negativeAmount);
+            ->decrement('usdt', $positiveAmount);
+    }
+
+    /**
+     * @param int   $memberId
+     * @param float $amount
+     */
+    public function creditRoi(int $memberId, float $amount)
+    {
+        $positiveAmount = abs($amount);
+
+        $this->walletBalance
+            ->where('member_id', $memberId)
+            ->decrement('usdt', $positiveAmount);
     }
 
     /**

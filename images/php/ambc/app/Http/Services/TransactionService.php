@@ -279,12 +279,15 @@ class TransactionService
         $feeTransTypeId = $feeTransType->id;
 
         try {
-            $senderTransation    = $this->memberUsdtTransactionRepository->credit(
+            $senderTransation = $this->memberUsdtTransactionRepository->credit(
                 $senderMemberId, $amount, $transferTypeId
             );
+            $this->walletBalanceRepository->creditUsdt($senderMemberId, $amount);
+
             $receiverTransaction = $this->memberUsdtTransactionRepository->debit(
                 $receiverMemberId, $amount, $transferTypeId
             );
+            $this->walletBalanceRepository->debitUsdt($receiverMemberId, $amount);
 
             if ( $fee !== 0 ) {
                 $senderFeeDeductionTransaction = $this
@@ -292,12 +295,14 @@ class TransactionService
                     ->credit(
                         $senderMemberId, $fee, $feeTransTypeId
                     );
+                $this->walletBalanceRepository->creditUsdt($senderMemberId, $fee);
 
                 $systemMemberId              = config('settings.systemMemberId');
                 $systemReceiveFeeTransaction = $this->memberUsdtTransactionRepository
                     ->debit(
                         $systemMemberId, $fee, $feeTransTypeId
                     );
+                $this->walletBalanceRepository->debitUsdt($systemMemberId, $fee);
             }
 
             $senderTransationId    = $senderTransation->id;

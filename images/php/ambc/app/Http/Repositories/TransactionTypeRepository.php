@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransactionTypeRepository
 {
-    private Builder $transactionType;
+    private TransactionType $transactionType;
 
     public function __construct(TransactionType $transactionType)
     {
-        $this->transactionType = $transactionType->query();
+        $this->transactionType = $transactionType;
     }
 
     /**
@@ -24,7 +24,8 @@ class TransactionTypeRepository
      */
     public function find(string $key)
     {
-        $transactionType = $this->transactionType
+        $selectQuery     = $this->transactionType->query();
+        $transactionType = $selectQuery
             ->where('name', $key)
             ->first();
 

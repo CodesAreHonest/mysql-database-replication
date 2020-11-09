@@ -184,6 +184,7 @@ class TransactionController extends Controller
      * @throws BadGateway
      * @throws InternalServerError
      * @throws UnprocessableEntity
+     * @throws Forbidden
      */
     public function transfer(Request $request)
     {
