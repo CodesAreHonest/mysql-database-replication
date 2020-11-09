@@ -18,7 +18,7 @@ services:
       APP_LOCALE: en
       APP_FALLBACK_LOCALE: en
       DB_CONNECTION: mysql
-      DB_HOST: db
+      DB_HOST: master_db
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -28,22 +28,19 @@ services:
       - 443:443
     depends_on:
       - cache
-      - db
+      - master_db
     networks:
       backend:
         aliases:
           - ambc-apache
 
-  db:
+  master_db:
     image: mysql:8
     command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
     volumes:
-      - db_data:/var/www/html
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USERNAME}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - master_db_data:/var/lib/mysql
+    env_file:
+      - ./images/master_db/mysql.env
     networks:
       backend:
         aliases:
@@ -61,16 +58,16 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
-      PMA_HOST: db
+      PMA_HOST: master_db
       PMA_PORT: 3306
     ports:
       - "8000:80"
     restart: unless-stopped
     tty: true
     links:
-      - db
+      - master_db
     depends_on:
-      - db
+      - master_db
     networks:
       backend:
         aliases:
@@ -87,7 +84,7 @@ networks:
     name: abmc-network
 
 volumes:
-  db_data:
+  master_db_data:
     driver: local
-  app_data:
+  ambc_data:
     driver: local
