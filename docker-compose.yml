@@ -8,6 +8,7 @@ services:
       args:
         uid: ${UID}
         serverName: ${APP_URL}
+    container_name: ambc_api
     volumes:
       - ./images/php/ambc:/var/www/html
     restart: unless-stopped
@@ -36,6 +37,7 @@ services:
 
   master_db:
     image: mysql:8
+    container_name: ambc_master_db
     command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
     volumes:
       - master_db_data:/var/lib/mysql
@@ -49,6 +51,7 @@ services:
   cache:
     image: redis:6.0-alpine
     restart: unless-stopped
+    container_name: ambc_cache
     tty: true
     networks:
       backend:
@@ -57,6 +60,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: ambc_phpmyadmin
     environment:
       PMA_HOST: master_db
       PMA_PORT: 3306
