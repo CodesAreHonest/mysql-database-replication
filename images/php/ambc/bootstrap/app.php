@@ -61,6 +61,7 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('settings');
+$app->configure('database');
 $app->configure('error');
 
 /*

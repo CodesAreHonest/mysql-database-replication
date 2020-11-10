@@ -167,7 +167,7 @@ class TransactionController extends Controller
         $amount   = $request->input('amount');
         $memberId = $request->input('memberId');
 
-        $response = $this->transactionService->convert($type, $memberId, $amount);
+        $response = $this->transactionService->convert($type, $amount, $memberId);
 
         switch ($response['code']) {
             case 200:

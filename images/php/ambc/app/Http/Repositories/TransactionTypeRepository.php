@@ -24,7 +24,10 @@ class TransactionTypeRepository
      */
     public function find(string $key)
     {
-        $selectQuery     = $this->transactionType->query();
+        $selectQuery = $this->transactionType
+            ->setConnection("mysql::read")
+            ->query();
+
         $transactionType = $selectQuery
             ->where('name', $key)
             ->first();

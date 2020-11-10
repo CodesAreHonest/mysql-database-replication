@@ -5,15 +5,14 @@ namespace App\Http\Repositories;
 
 
 use App\Models\MemberRoiTransaction;
-use Illuminate\Database\Eloquent\Builder;
 
 class MemberRoiTransactionRepository
 {
-    private Builder $memberRoiTransaction;
+    private MemberRoiTransaction $memberRoiTransaction;
 
     public function __construct(MemberRoiTransaction $memberRoiTransaction)
     {
-        $this->memberRoiTransaction = $memberRoiTransaction->query();
+        $this->memberRoiTransaction = $memberRoiTransaction;
     }
 
     public function debit(int $memberId, float $debitAmount, int $transactionTypeId)
@@ -27,7 +26,11 @@ class MemberRoiTransactionRepository
             'credit'              => 0
         ];
 
-        return $this->memberRoiTransaction->create($attributes);
+        $selectQuery = $this->memberRoiTransaction
+            ->setConnection("mysql::write")
+            ->query();
+
+        return $selectQuery->create($attributes);
     }
 
     private function generateTxCode()
@@ -47,6 +50,8 @@ class MemberRoiTransactionRepository
             'credit'              => $positiveCreditAmount
         ];
 
-        return $this->memberRoiTransaction->create($attributes);
+        return $this->memberRoiTransaction
+            ->on("mysql::write")
+            ->create($attributes);
     }
 }

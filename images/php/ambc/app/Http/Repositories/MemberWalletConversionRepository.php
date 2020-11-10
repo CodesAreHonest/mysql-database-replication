@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class MemberWalletConversionRepository
 {
-    private Builder $memberWalletConversion;
+    private MemberWalletConversion $memberWalletConversion;
 
     public function __construct(MemberWalletConversion $memberWalletConversion)
     {
-        $this->memberWalletConversion = $memberWalletConversion->query();
+        $this->memberWalletConversion = $memberWalletConversion;
     }
 
     /**
@@ -29,16 +29,16 @@ class MemberWalletConversionRepository
             'usdt_transaction_id' => $receiveTransactionId
         ];
 
-        if ( $convertWalletType === "bonus" ) {
+        if ($convertWalletType === "bonus") {
             $attributes['bonus_transaction_id'] = $senderTransactionId;
         }
 
-        if ( $convertWalletType === "roi" ) {
+        if ($convertWalletType === "roi") {
             $attributes['roi_transaction_id'] = $senderTransactionId;
         }
 
-        $this->memberWalletConversion->create($attributes);
-
+        $this->memberWalletConversion
+            ->on("mysql::write")
+            ->create($attributes);
     }
-
 }

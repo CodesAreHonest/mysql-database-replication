@@ -160,10 +160,10 @@ class TransactionService
             $transactionType   = $this->transactionTypeRepository->find('withdrawal');
             $transactionTypeId = $transactionType->id;
 
-            $this->memberUsdtTransactionRepository->debit(
+            $this->memberUsdtTransactionRepository->credit(
                 $memberId, $amount, $transactionTypeId
             );
-            $this->walletBalanceRepository->debitUsdt($memberId, $amount);
+            $this->walletBalanceRepository->creditUsdt($memberId, $amount);
 
             return [
                 'code'    => 200,

@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberBonusTransactionRepository
 {
-    private Builder $memberBonusTransaction;
+    private MemberBonusTransaction $memberBonusTransaction;
 
     public function __construct(MemberBonusTransaction $memberBonusTransaction)
     {
-        $this->memberBonusTransaction = $memberBonusTransaction->query();
+        $this->memberBonusTransaction = $memberBonusTransaction;
     }
 
     /**
@@ -34,7 +34,9 @@ class MemberBonusTransactionRepository
             'credit'              => 0
         ];
 
-        return $this->memberBonusTransaction->create($attributes);
+        return $this->memberBonusTransaction
+            ->on("mysql::write")
+            ->create($attributes);
     }
 
     private function generateTxCode()
@@ -59,6 +61,8 @@ class MemberBonusTransactionRepository
             'credit'              => $creditAmount
         ];
 
-        return $this->memberBonusTransaction->create($attributes);
+        return $this->memberBonusTransaction
+            ->on("mysql::write")
+            ->create($attributes);
     }
 }

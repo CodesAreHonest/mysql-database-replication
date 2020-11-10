@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class MemberUsdtTransferTransactionRepository
 {
-    private Builder $memberUsdtTransferTransation;
+    private MemberUsdtTransferTransaction $memberUsdtTransferTransation;
 
     public function __construct(MemberUsdtTransferTransaction $memberUsdtTransferTransaction)
     {
-        $this->memberUsdtTransferTransation = $memberUsdtTransferTransaction->query();
+        $this->memberUsdtTransferTransation = $memberUsdtTransferTransaction;
     }
 
     public function create(
@@ -23,8 +23,7 @@ class MemberUsdtTransferTransactionRepository
         int $receiverTransactionId,
         ?int $senderFeeDeductionId = null,
         ?int $systemReceiveFeeId = null
-    )
-    {
+    ) {
         $attributes = [
             'sender_member_id'                    => $senderMemberId,
             'receiver_member_id'                  => $receiverMemberId,
@@ -34,8 +33,8 @@ class MemberUsdtTransferTransactionRepository
             'system_receive_fee_transaction_id'   => $systemReceiveFeeId
         ];
 
-        $this->memberUsdtTransferTransation->create($attributes);
-
+        $this->memberUsdtTransferTransation
+            ->on("mysql::write")
+            ->create($attributes);
     }
-
 }

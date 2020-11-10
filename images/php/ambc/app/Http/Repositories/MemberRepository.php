@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberRepository
 {
-    private Builder $member;
+    private Member $member;
 
     public function __construct(Member $member)
     {
-        $this->member = $member->query();
+        $this->member = $member;
     }
 
     /**
@@ -36,8 +36,15 @@ class MemberRepository
             'usdt'  => 0
         ];
 
-        $newMember = $this->member->create($memberAttributes);
-        $newMember->walletBalance()->create($walletBalanceAttributes);
+        $createQuery = $this->member->setConnection("mysql::write")
+            ->query();
+
+        $newMember = $createQuery
+            ->create($memberAttributes);
+
+        $newMember
+            ->walletBalance()
+            ->create($walletBalanceAttributes);
 
         return $newMember;
     }

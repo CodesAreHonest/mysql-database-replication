@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberUsdtTransactionRepository
 {
-    private Builder $memberUsdtTransaction;
+    private MemberUsdtTransaction $memberUsdtTransaction;
 
     public function __construct(MemberUsdtTransaction $memberUsdtTransaction)
     {
-        $this->memberUsdtTransaction = $memberUsdtTransaction->query();
+        $this->memberUsdtTransaction = $memberUsdtTransaction;
     }
 
     /**
@@ -34,7 +34,9 @@ class MemberUsdtTransactionRepository
             'credit'              => 0
         ];
 
-        return $this->memberUsdtTransaction->create($attributes);
+        return $this->memberUsdtTransaction
+            ->setConnection("mysql::write")
+            ->create($attributes);
     }
 
     private function generateTxCode()
@@ -59,6 +61,8 @@ class MemberUsdtTransactionRepository
             'credit'              => $creditAmount
         ];
 
-        return $this->memberUsdtTransaction->create($attributes);
+        return $this->memberUsdtTransaction
+            ->setConnection("mysql::write")
+            ->create($attributes);
     }
 }

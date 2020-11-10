@@ -7,6 +7,7 @@ use App\Models\WalletBalance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class WalletBalanceRepository
 {
@@ -31,7 +32,9 @@ class WalletBalanceRepository
             'usdt'
         ];
 
-        return $this->walletBalance->find($memberId, $walletTypes);
+        return $this->walletBalance
+            ->setConnection("mysql::read")
+            ->find($memberId, $walletTypes);
     }
 
     /**
@@ -43,6 +46,7 @@ class WalletBalanceRepository
         $positiveAmount = abs($amount);
 
         $this->walletBalance
+            ->setConnection("mysql::write")
             ->where('member_id', $memberId)
             ->increment('roi', $positiveAmount);
     }
@@ -57,6 +61,7 @@ class WalletBalanceRepository
         $positiveAmount = abs($amount);
 
         $this->walletBalance
+            ->setConnection("mysql::write")
             ->where('member_id', $memberId)
             ->decrement('bonus', $positiveAmount);
     }
@@ -70,6 +75,7 @@ class WalletBalanceRepository
         $positiveAmount = abs($amount);
 
         $this->walletBalance
+            ->setConnection("mysql::write")
             ->where('member_id', $memberId)
             ->increment('bonus', $positiveAmount);
     }
@@ -83,6 +89,7 @@ class WalletBalanceRepository
         $positiveAmount = abs($amount);
 
         $this->walletBalance
+            ->setConnection("mysql::write")
             ->where('member_id', $memberId)
             ->increment('usdt', $positiveAmount);
     }
@@ -96,6 +103,7 @@ class WalletBalanceRepository
         $positiveAmount = abs($amount);
 
         $this->walletBalance
+            ->setConnection("mysql::write")
             ->where('member_id', $memberId)
             ->decrement('usdt', $positiveAmount);
     }
@@ -109,6 +117,7 @@ class WalletBalanceRepository
         $positiveAmount = abs($amount);
 
         $this->walletBalance
+            ->setConnection("mysql::write")
             ->where('member_id', $memberId)
             ->decrement('usdt', $positiveAmount);
     }
@@ -120,17 +129,22 @@ class WalletBalanceRepository
      */
     public function convert(int $memberId, string $targetWallet, float $convertAmount)
     {
-        $destinationWallet  = 'usdt';
-        $memberWallet       = $this->walletBalance->find($memberId);
+        $destinationWallet = 'usdt';
+        $memberWallet      = $this->walletBalance
+            ->setConnection("mysql::read")
+            ->where('member_id', $memberId)
+            ->first();
+
         $targetBalance      = $memberWallet[$targetWallet] - $convertAmount;
         $destinationBalance = $memberWallet[$destinationWallet] + $convertAmount;
 
-        $this->walletBalance->where('member_id', $memberId)
+        $this->walletBalance
+            ->setConnection("mysql::write")
+            ->where('member_id', $memberId)
             ->update([
                 $destinationWallet => $destinationBalance,
                 $targetWallet      => $targetBalance
             ]);
-
     }
 
     public function isSufficient(int $memberId, string $walletType, float $deductionAmount)
@@ -139,11 +153,11 @@ class WalletBalanceRepository
         $positiveDeductionAmount = abs($deductionAmount);
 
         $isSufficient = $this->walletBalance
+            ->setConnection("mysql::read")
             ->where('member_id', $memberId)
             ->where($lowerWalletType, '>=', $positiveDeductionAmount)
             ->exists();
 
         return $isSufficient;
     }
-
 }
