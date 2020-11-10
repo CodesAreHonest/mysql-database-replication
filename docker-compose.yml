@@ -41,7 +41,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
     volumes:
       - master_db_data:/var/lib/mysql
-      - ./images/database/master_db/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./images/database/master_db/mysql.cnf:/etc/mysql/conf.d/mysql.conf.cnf
     env_file:
       - ./images/database/master_db/mysql.env
     networks:
@@ -54,7 +54,7 @@ services:
     container_name: ambc_slave_db_1
     command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
     volumes:
-      - ./images/database/slave_db_1/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./images/database/slave_db_1/mysql.cnf:/etc/mysql/conf.d/mysql.conf.cnf
     env_file:
       - ./images/database/slave_db_1/mysql.env
     networks:
@@ -67,7 +67,7 @@ services:
     container_name: ambc_slave_db_2
     command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
     volumes:
-      - ./images/database/slave_db_1/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./images/database/slave_db_1/mysql.cnf:/etc/mysql/conf.d/mysql.conf.cnf
     env_file:
       - ./images/database/slave_db_2/mysql.env
     networks:
