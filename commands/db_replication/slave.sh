@@ -8,7 +8,9 @@ fi
 ## 4. Set Replication
 
 for N in 1 2
-  do docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword \
+  do docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword -e "RESET SLAVE;"
+  
+  docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword \
     -e "CHANGE MASTER TO MASTER_HOST='ambc_master_db', MASTER_USER='repl', \
       MASTER_PASSWORD='slavepass', MASTER_LOG_FILE='binlog.$1';"
 
