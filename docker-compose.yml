@@ -41,12 +41,39 @@ services:
     command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
     volumes:
       - master_db_data:/var/lib/mysql
+      - ./images/database/master_db/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     env_file:
-      - ./images/master_db/mysql.env
+      - ./images/database/master_db/mysql.env
     networks:
       backend:
         aliases:
-          - ambc-database
+          - ambc-master-database
+
+  slave_db_1:
+    image: mysql:8
+    container_name: ambc_slave_db_1
+    command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
+    volumes:
+      - ./images/database/slave_db_1/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    env_file:
+      - ./images/database/slave_db_1/mysql.env
+    networks:
+      backend:
+        aliases:
+          - ambc-slave-database-1
+
+  slave_db_2:
+    image: mysql:8
+    container_name: ambc_slave_db_2
+    command: --default-authentication-plugin=mysql_native_password # needed as of mysql 8
+    volumes:
+      - ./images/database/slave_db_1/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    env_file:
+      - ./images/database/slave_db_2/mysql.env
+    networks:
+      backend:
+        aliases:
+          - ambc-slave-database-2
 
   cache:
     image: redis:6.0-alpine
