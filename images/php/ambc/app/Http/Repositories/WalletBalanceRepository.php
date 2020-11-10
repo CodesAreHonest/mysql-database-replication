@@ -32,9 +32,11 @@ class WalletBalanceRepository
             'usdt'
         ];
 
-        return $this->walletBalance
+        $walletBalance =  $this->walletBalance
             ->setConnection("mysql::read")
             ->find($memberId, $walletTypes);
+
+        return $walletBalance;
     }
 
     /**
