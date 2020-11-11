@@ -15,11 +15,16 @@ docker exec -it ambc_master_db mysql -uroot -psecurerootpassword \
   -e "GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';" \
   -e "SHOW MASTER STATUS;"
 
-## 3. Configuring Slave 
+## 3. Configuring Slave
 
-for N in 1 2
-  do docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword \
+for N in 1 2; do
+  docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword \
     -e "INSTALL PLUGIN rpl_semi_sync_slave SONAME 'semisync_slave.so';" \
     -e "SET GLOBAL rpl_semi_sync_slave_enabled = 1;" \
     -e "SHOW VARIABLES LIKE 'rpl_semi_sync%';"
 done
+
+## 4. Show Master Status
+
+docker exec -it ambc_master_db mysql -uroot -psecurerootpassword \
+  -e "SHOW MASTER STATUS;"
