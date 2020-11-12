@@ -13,6 +13,7 @@ use App\Http\Repositories\MemberUsdtTransferTransactionRepository;
 use App\Http\Repositories\MemberWalletConversionRepository;
 use App\Http\Repositories\TransactionTypeRepository;
 use App\Http\Repositories\WalletBalanceRepository;
+use App\Http\Cache\WalletBalanceCache;
 use Exception;
 
 class TransactionService
@@ -25,6 +26,8 @@ class TransactionService
     private MemberWalletConversionRepository $memberWalletConversionRepository;
     private MemberUsdtTransferTransactionRepository $memberUsdtTransferTransactionRepository;
 
+    private WalletBalanceCache $walletBalanceCache;
+
     public function __construct(
         TransactionTypeRepository $transactionTypeRepository,
         MemberRoiTransactionRepository $memberRoiTransactionRepository,
@@ -32,7 +35,8 @@ class TransactionService
         WalletBalanceRepository $walletBalanceRepository,
         MemberUsdtTransactionRepository $memberUsdtTransactionRepository,
         MemberWalletConversionRepository $memberWalletConversionRepository,
-        MemberUsdtTransferTransactionRepository $memberUsdtTransferTransactionRepository
+        MemberUsdtTransferTransactionRepository $memberUsdtTransferTransactionRepository,
+        WalletBalanceCache $walletBalanceCache
     ) {
         $this->transactionTypeRepository               = $transactionTypeRepository;
         $this->memberRoiTransactionRepository          = $memberRoiTransactionRepository;
@@ -41,6 +45,7 @@ class TransactionService
         $this->memberUsdtTransactionRepository         = $memberUsdtTransactionRepository;
         $this->memberWalletConversionRepository        = $memberWalletConversionRepository;
         $this->memberUsdtTransferTransactionRepository = $memberUsdtTransferTransactionRepository;
+        $this->walletBalanceCache                      = $walletBalanceCache;
     }
 
 
@@ -59,6 +64,9 @@ class TransactionService
 
             $this->memberRoiTransactionRepository->debit($memberId, $amount, $transactionTypeId);
             $this->walletBalanceRepository->debitRoi($memberId, $amount);
+
+            // remove the previous cache and place the new one
+            $this->walletBalanceCache->put($memberId);
 
             return [
                 'code'    => 200,
@@ -90,6 +98,9 @@ class TransactionService
             $this->memberBonusTransactionRepository->debit($memberId, $amount, $transactionTypeId);
             $this->walletBalanceRepository->debitBonus($memberId, $amount);
 
+            // remove the previous cache and place the new one
+            $this->walletBalanceCache->put($memberId);
+
             return [
                 'code'    => 200,
                 'message' => 'success'
@@ -119,6 +130,9 @@ class TransactionService
 
             $this->memberUsdtTransactionRepository->debit($memberId, $amount, $transactionTypeId);
             $this->walletBalanceRepository->debitUsdt($memberId, $amount);
+
+            // remove the previous cache and place the new one
+            $this->walletBalanceCache->put($memberId);
 
             return [
                 'code'    => 200,
@@ -165,6 +179,9 @@ class TransactionService
                 $transactionTypeId
             );
             $this->walletBalanceRepository->creditUsdt($memberId, $amount);
+
+            // remove the previous cache and place the new one
+            $this->walletBalanceCache->put($memberId);
 
             return [
                 'code'    => 200,
@@ -229,6 +246,9 @@ class TransactionService
                 $senderTransactionId,
                 $receiverTransactionId
             );
+
+            // remove the previous cache and place the new one
+            $this->walletBalanceCache->put($memberId);
 
             return [
                 'code'    => 200,
@@ -331,6 +351,10 @@ class TransactionService
                 $senderFeeDeductionId,
                 $systemReceiveFeeId
             );
+
+            // remove the previous cache and place the new one
+            $this->walletBalanceCache->put($senderMemberId);
+            $this->walletBalanceCache->put($receiverMemberId);
 
             return [
                 'code'    => 200,

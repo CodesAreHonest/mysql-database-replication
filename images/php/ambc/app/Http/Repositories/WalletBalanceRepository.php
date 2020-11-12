@@ -7,15 +7,18 @@ use App\Models\WalletBalance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use App\Http\Cache\WalletBalanceCache;
+use Illuminate\Support\Facades\Cache;
 
 class WalletBalanceRepository
 {
     private WalletBalance $walletBalance;
+    private WalletBalanceCache $walletBalanceCache;
 
-    public function __construct(WalletBalance $walletBalance)
+    public function __construct(WalletBalance $walletBalance, WalletBalanceCache $walletBalanceCache)
     {
         $this->walletBalance = $walletBalance;
+        $this->walletBalanceCache = $walletBalanceCache;
     }
 
     /**
@@ -39,9 +42,13 @@ class WalletBalanceRepository
             'usdt'
         ];
 
-        return $this->walletBalance
+        $results = $this->walletBalance
             ->setConnection("mysql::read")
-            ->find($memberId, $walletTypes);
+            ->select($walletTypes)
+            ->where('member_id', $memberId)
+            ->first();
+
+        return $results;
     }
 
     /**

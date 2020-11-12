@@ -5,17 +5,20 @@ namespace App\Http\Services;
 
 use App\Exceptions\InternalServerError;
 use App\Http\Repositories\WalletBalanceRepository;
+use App\Http\Cache\WalletBalanceCache;
 use Exception;
 
 class WalletService
 {
     private WalletBalanceRepository $walletBalanceRepository;
+    private WalletBalanceCache $walletBalanceCache;
 
     public function __construct(
-        WalletBalanceRepository $walletBalanceRepository
-    )
-    {
+        WalletBalanceRepository $walletBalanceRepository,
+        WalletBalanceCache $walletBalanceCache
+    ) {
         $this->walletBalanceRepository = $walletBalanceRepository;
+        $this->walletBalanceCache = $walletBalanceCache;
     }
 
     /**
@@ -27,7 +30,18 @@ class WalletService
     public function getBalance(int $memberId)
     {
         try {
+            $isCacheExist = $this->walletBalanceCache->has($memberId);
+            if ($isCacheExist) {
+                $cacheResults = $this->walletBalanceCache->get($memberId);
+                return [
+                    'code'    => 200,
+                    'message' => 'success',
+                    'data'    => $cacheResults
+                ];
+            }
+
             $memberBalances = $this->walletBalanceRepository->find($memberId);
+            $this->walletBalanceCache->put($memberId, $memberBalances);
 
             return [
                 'code'    => 200,
@@ -41,6 +55,5 @@ class WalletService
                 $exception->getMessage()
             );
         }
-
     }
 }

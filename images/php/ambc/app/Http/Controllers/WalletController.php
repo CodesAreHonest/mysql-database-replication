@@ -9,6 +9,7 @@ use App\Http\Services\WalletService;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class WalletController extends Controller
 {
@@ -45,6 +46,5 @@ class WalletController extends Controller
             default:
                 throw new BadGateway();
         }
-
     }
 }
