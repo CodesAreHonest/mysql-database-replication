@@ -139,12 +139,9 @@ class WalletBalanceRepository
         $destinationWallet = 'usdt';
         $memberWallet      = $this->walletBalance
             ->setConnection("mysql::read")
-            ->where('member_id', $memberId);
-
-        dd($memberWallet->toSql());
-
-
-        // ->first();
+            ->select(['ambc', 'bonus', 'roi', 'usdt'])
+            ->where('member_id', $memberId)
+            ->first();
 
         $targetBalance      = $memberWallet[$targetWallet] - $convertAmount;
         $destinationBalance = $memberWallet[$destinationWallet] + $convertAmount;
