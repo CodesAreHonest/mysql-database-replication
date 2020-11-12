@@ -33,8 +33,7 @@ class TransactionService
         MemberUsdtTransactionRepository $memberUsdtTransactionRepository,
         MemberWalletConversionRepository $memberWalletConversionRepository,
         MemberUsdtTransferTransactionRepository $memberUsdtTransferTransactionRepository
-    )
-    {
+    ) {
         $this->transactionTypeRepository               = $transactionTypeRepository;
         $this->memberRoiTransactionRepository          = $memberRoiTransactionRepository;
         $this->memberBonusTransactionRepository        = $memberBonusTransactionRepository;
@@ -148,7 +147,7 @@ class TransactionService
         $isBalanceSufficient = $this->walletBalanceRepository
             ->isSufficient($memberId, 'usdt', $amount);
 
-        if ( !$isBalanceSufficient ) {
+        if (!$isBalanceSufficient) {
             throw new Forbidden(
                 "INSUFFICIENT_BALANCE",
                 config('error.server.CLIENT_EXCEPTION'),
@@ -161,7 +160,9 @@ class TransactionService
             $transactionTypeId = $transactionType->id;
 
             $this->memberUsdtTransactionRepository->credit(
-                $memberId, $amount, $transactionTypeId
+                $memberId,
+                $amount,
+                $transactionTypeId
             );
             $this->walletBalanceRepository->creditUsdt($memberId, $amount);
 
@@ -192,7 +193,7 @@ class TransactionService
         $isBalanceSufficient = $this->walletBalanceRepository
             ->isSufficient($memberId, $type, $amount);
 
-        if ( !$isBalanceSufficient ) {
+        if (!$isBalanceSufficient) {
             throw new Forbidden(
                 "INSUFFICIENT_BALANCE",
                 config('error.server.CLIENT_EXCEPTION'),
@@ -205,13 +206,15 @@ class TransactionService
             $transactionType   = $this->transactionTypeRepository->find('convert');
             $transactionTypeId = $transactionType->id;
 
-            if ( $type === "bonus" ) {
+            if ($type === "bonus") {
                 $senderTransaction = $this->memberBonusTransactionRepository->credit($memberId, $amount, $transactionTypeId);
             }
 
-            if ( $type === "roi" ) {
+            if ($type === "roi") {
                 $senderTransaction = $this->memberRoiTransactionRepository->credit(
-                    $memberId, $amount, $transactionTypeId
+                    $memberId,
+                    $amount,
+                    $transactionTypeId
                 );
             }
 
@@ -221,7 +224,10 @@ class TransactionService
             $senderTransactionId   = $senderTransaction->id;
             $receiverTransactionId = $receiverTransaction->id;
             $this->memberWalletConversionRepository->create(
-                $memberId, $type, $senderTransactionId, $receiverTransactionId
+                $memberId,
+                $type,
+                $senderTransactionId,
+                $receiverTransactionId
             );
 
             return [
@@ -251,8 +257,7 @@ class TransactionService
         int $receiverMemberId,
         float $amount,
         float $fee = 0
-    )
-    {
+    ) {
 
         // verify whether is sufficient balance
         $totalDeductionAmount = $amount + $fee;
@@ -262,7 +267,7 @@ class TransactionService
             $totalDeductionAmount
         );
 
-        if ( !$isSufficient ) {
+        if (!$isSufficient) {
             throw new Forbidden(
                 "INSUFFICIENT_BALANCE",
                 config('error.server.CLIENT_EXCEPTION'),
@@ -280,27 +285,35 @@ class TransactionService
 
         try {
             $senderTransation = $this->memberUsdtTransactionRepository->credit(
-                $senderMemberId, $amount, $transferTypeId
+                $senderMemberId,
+                $amount,
+                $transferTypeId
             );
             $this->walletBalanceRepository->creditUsdt($senderMemberId, $amount);
 
             $receiverTransaction = $this->memberUsdtTransactionRepository->debit(
-                $receiverMemberId, $amount, $transferTypeId
+                $receiverMemberId,
+                $amount,
+                $transferTypeId
             );
             $this->walletBalanceRepository->debitUsdt($receiverMemberId, $amount);
 
-            if ( $fee !== 0 ) {
+            if ($fee !== 0) {
                 $senderFeeDeductionTransaction = $this
                     ->memberUsdtTransactionRepository
                     ->credit(
-                        $senderMemberId, $fee, $feeTransTypeId
+                        $senderMemberId,
+                        $fee,
+                        $feeTransTypeId
                     );
                 $this->walletBalanceRepository->creditUsdt($senderMemberId, $fee);
 
                 $systemMemberId              = config('settings.systemMemberId');
                 $systemReceiveFeeTransaction = $this->memberUsdtTransactionRepository
                     ->debit(
-                        $systemMemberId, $fee, $feeTransTypeId
+                        $systemMemberId,
+                        $fee,
+                        $feeTransTypeId
                     );
                 $this->walletBalanceRepository->debitUsdt($systemMemberId, $fee);
             }
@@ -330,6 +343,5 @@ class TransactionService
                 $exception->getMessage()
             );
         }
-
     }
 }
