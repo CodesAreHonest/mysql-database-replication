@@ -110,6 +110,40 @@ services:
         delay: 5s
         window: 60s
 
+  prometheus:
+    image: prom/prometheus
+    container_name: ambc_prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 60s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 60s
+
+  grafana:
+    image: grafana/grafana
+    container_name: ambc_grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    tty: true
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 60s
+
 networks:
   backend:
     name: abmc-network
