@@ -13,12 +13,10 @@ use Illuminate\Support\Facades\Cache;
 class WalletBalanceRepository
 {
     private WalletBalance $walletBalance;
-    private WalletBalanceCache $walletBalanceCache;
 
-    public function __construct(WalletBalance $walletBalance, WalletBalanceCache $walletBalanceCache)
+    public function __construct(WalletBalance $walletBalance)
     {
         $this->walletBalance = $walletBalance;
-        $this->walletBalanceCache = $walletBalanceCache;
     }
 
     /**

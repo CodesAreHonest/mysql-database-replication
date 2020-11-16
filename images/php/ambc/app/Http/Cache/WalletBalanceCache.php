@@ -3,19 +3,10 @@
 namespace App\Http\Cache;
 
 use Illuminate\Support\Facades\Cache;
-use App\Http\Repositories\WalletBalanceRepository;
 
 class WalletBalanceCache
 {
-    private string $cacheKey;
-    private WalletBalanceRepository $walletBalanceRepository;
-
-    public function __construct(
-        WalletBalanceRepository $walletBalanceRepository
-    ) {
-        $this->cacheKey = "wallet-balance";
-        $this->walletBalanceRepository = $walletBalanceRepository;
-    }
+    private string $key = "wallet-balance";
 
     /**
      * @param int $memberId
@@ -23,10 +14,9 @@ class WalletBalanceCache
      *
      * @return bool
      */
-    public function put(int $memberId): bool
+    public function put(int $memberId, $data): bool
     {
-        $memberBalance = $this->walletBalanceRepository->find($memberId);
-        return Cache::put("$this->cacheKey@$memberId", $memberBalance);
+        return Cache::put("$this->key@$memberId", $data);
     }
 
     /**
@@ -36,17 +26,27 @@ class WalletBalanceCache
      */
     public function has(int $memberId): bool
     {
-        return Cache::has("$this->cacheKey@$memberId");
+        return Cache::has("$this->key@$memberId");
     }
 
     /**
      * @param int $memberId
-     * @param Closure
      *
      * @return bool
      */
     public function get(int $memberId)
     {
-        return Cache::get("$this->cacheKey@$memberId");
+        return Cache::get("$this->key@$memberId");
+    }
+
+    /**
+     * Forget the specific cache key
+     *
+     * @param  mixed $memberId
+     * @return bool
+     */
+    public function forget(int $memberId)
+    {
+        return Cache::forget("$this->key@$memberId");
     }
 }

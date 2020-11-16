@@ -25,7 +25,6 @@ class TransactionService
     private WalletBalanceRepository $walletBalanceRepository;
     private MemberWalletConversionRepository $memberWalletConversionRepository;
     private MemberUsdtTransferTransactionRepository $memberUsdtTransferTransactionRepository;
-
     private WalletBalanceCache $walletBalanceCache;
 
     public function __construct(
@@ -66,7 +65,7 @@ class TransactionService
             $this->walletBalanceRepository->debitRoi($memberId, $amount);
 
             // remove the previous cache and place the new one
-            $this->walletBalanceCache->put($memberId);
+            $this->walletBalanceCache->forget($memberId);
 
             return [
                 'code'    => 200,
@@ -99,7 +98,7 @@ class TransactionService
             $this->walletBalanceRepository->debitBonus($memberId, $amount);
 
             // remove the previous cache and place the new one
-            $this->walletBalanceCache->put($memberId);
+            $this->walletBalanceCache->forget($memberId);
 
             return [
                 'code'    => 200,
@@ -132,7 +131,7 @@ class TransactionService
             $this->walletBalanceRepository->debitUsdt($memberId, $amount);
 
             // remove the previous cache and place the new one
-            $this->walletBalanceCache->put($memberId);
+            $this->walletBalanceCache->forget($memberId);
 
             return [
                 'code'    => 200,
@@ -181,7 +180,7 @@ class TransactionService
             $this->walletBalanceRepository->creditUsdt($memberId, $amount);
 
             // remove the previous cache and place the new one
-            $this->walletBalanceCache->put($memberId);
+            $this->walletBalanceCache->forget($memberId);
 
             return [
                 'code'    => 200,
@@ -248,7 +247,7 @@ class TransactionService
             );
 
             // remove the previous cache and place the new one
-            $this->walletBalanceCache->put($memberId);
+            $this->walletBalanceCache->forget($memberId);
 
             return [
                 'code'    => 200,
@@ -353,8 +352,8 @@ class TransactionService
             );
 
             // remove the previous cache and place the new one
-            $this->walletBalanceCache->put($senderMemberId);
-            $this->walletBalanceCache->put($receiverMemberId);
+            $this->walletBalanceCache->forget($senderMemberId);
+            $this->walletBalanceCache->forget($receiverMemberId);
 
             return [
                 'code'    => 200,
