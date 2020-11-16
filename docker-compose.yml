@@ -118,7 +118,7 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./images/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     deploy:
       replicas: 1
       restart_policy:
