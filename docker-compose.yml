@@ -118,13 +118,15 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ./images/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./images/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - cadvisor
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
         delay: 5s
-        window: 60s
+        window: 10s
 
   grafana:
     image: grafana/grafana
@@ -156,6 +158,8 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+      - cache
     expose:
       - 8080
 
