@@ -143,6 +143,25 @@ services:
         condition: on-failure
         delay: 5s
         window: 60s
+  
+  node-exporter:
+    image: quay.io/prometheus/node-exporter
+    container_name: ambc_node_exporter
+    restart: unless-stopped
+    expose:
+      - 9100
+
+  cadvisor:
+    image: google/cadvisor:latest
+    container_name: ambc_cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    expose:
+      - 8080
 
 networks:
   backend:
