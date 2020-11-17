@@ -9,3 +9,4 @@ docker container rm ambc_slave_db_2
 docker container rm ambc_node_exporter
 docker container rm ambc_prometheus
 docker container rm ambc_grafana
+docker container rm ambc_cadvisor
