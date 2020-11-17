@@ -125,7 +125,7 @@ services:
     ports:
       - "9090:9090"
 
-  grafana:
+  grafana: ## 193
     image: grafana/grafana
     container_name: ambc_grafana
     ports:
