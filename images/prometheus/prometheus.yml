@@ -1,9 +1,20 @@
 #prometheus.yml - file
 #this must be in the same directory as of docker-compose.yml file
 
+global:
+  scrape_interval: 5s
+  external_labels:
+    monitor: "node"
 scrape_configs:
   - job_name: cadvisor
     scrape_interval: 5s
     static_configs:
-      - targets:
-          - cadvisor:8080
+      - targets: ["cadvisor:8080"]
+  - job_name: "prometheus"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["prometheus:9090"]
+  - job_name: "node-exporter"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["node-exporter:9100"]
