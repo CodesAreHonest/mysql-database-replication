@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class MemberSeeder extends Seeder
+class WalletBalanceSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,25 +16,32 @@ class MemberSeeder extends Seeder
     public function run()
     {
         $data = $this->seedData();
-        DB::table('members')->insertOrIgnore($data);
+        DB::table('wallet_balances')->insertOrIgnore($data);
     }
 
     private function seedData()
     {
         $currentTime = Carbon::now();
+
         return [
             [
                 'id'    => 1,
-                'first_name'    => 'Default',
-                'last_name'     => 'System',
+                'member_id' => 1,
+                'roi'   => 0,
+                'bonus' => 0,
+                'ambc'  => 0,
+                'usdt'  => 0,
                 'deleted_at'    => null,
                 'created_at'    => $currentTime,
                 'updated_at'    => $currentTime
             ],
             [
                 'id'    => 2,
-                'first_name'    => 'Yinghua',
-                'last_name'     => 'Chai',
+                'member_id' => 2,
+                'roi'   => 0,
+                'bonus' => 0,
+                'ambc'  => 0,
+                'usdt'  => 0,
                 'deleted_at'    => null,
                 'created_at'    => $currentTime,
                 'updated_at'    => $currentTime

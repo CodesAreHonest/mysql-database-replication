@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 
 use Database\Seeders\TransactionTypeSeeder;
 use Database\Seeders\MemberSeeder;
-use Database\Seeders\AdminSeeder;
+use Database\Seeders\WalletBalanceSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +19,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(TransactionTypeSeeder::class);
         $this->call(MemberSeeder::class);
-        $this->call(AdminSeeder::class);
+        $this->call(WalletBalanceSeeder::class);
     }
 }
