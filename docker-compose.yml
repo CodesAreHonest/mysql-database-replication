@@ -25,7 +25,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       CACHE_DRIVER: redis
     ports:
-      - 80:81
+      - 81:80
     depends_on:
       - cache
       - master_db
