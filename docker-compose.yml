@@ -26,7 +26,6 @@ services:
       CACHE_DRIVER: redis
     ports:
       - 80:80
-      - 443:443
     depends_on:
       - cache
       - master_db
