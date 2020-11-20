@@ -30,3 +30,5 @@
 
 server-id = 2
 log-slave-updates=1
+max_connections = 512
+

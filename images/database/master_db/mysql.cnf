@@ -29,3 +29,4 @@
 [mysqld]
 
 server-id = 1
+max_connections = 512

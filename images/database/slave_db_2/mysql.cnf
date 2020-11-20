@@ -29,4 +29,5 @@
 [mysqld]
 
 server-id = 3
-log-slave-updates=1
+log-slave-updates = 1
+max_connections = 512

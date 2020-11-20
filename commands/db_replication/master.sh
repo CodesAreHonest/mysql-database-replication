@@ -24,7 +24,15 @@ for N in 1 2; do
     -e "SHOW VARIABLES LIKE 'rpl_semi_sync%';"
 done
 
-## 4. Show Master Status
+## 4. Enable Logs
+##  - The Error Log - It contains information about errors that occur while the server is running (also server start and stop)
+##  - The General Query Log - This is a general record of what mysqld is doing (connect, disconnect, queries)
+##  - The Slow Query Log -  Ιt consists of "slow" SQL statements (as indicated by its name).
+docker exec -it ambc_master_db mysql -uroot -psecurerootpassword \
+  -e "SET GLOBAL general_log = 'on';" \
+  -e "SET GLOBAL slow_query_log = 'on';" \
+  -e "SET GLOBAL long_query_time = 1;" \
 
+## 5. Show Master Status
 docker exec -it ambc_master_db mysql -uroot -psecurerootpassword \
   -e "SHOW MASTER STATUS;"

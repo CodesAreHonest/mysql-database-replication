@@ -15,6 +15,12 @@ for N in 1 2
       MASTER_PASSWORD='slavepass', MASTER_LOG_FILE='binlog.$1';"
 
   docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword -e "START SLAVE;"
+
+  ## enable slow logs and general logs
+  docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword \
+    -e "SET GLOBAL general_log = 'on';" \
+    -e "SET GLOBAL slow_query_log = 'on';" \
+    -e "SET GLOBAL long_query_time = 1;" \
 done
 
 
