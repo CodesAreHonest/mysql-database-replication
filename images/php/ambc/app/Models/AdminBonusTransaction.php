@@ -9,9 +9,9 @@ class AdminBonusTransaction extends Model
 {
     use SoftDeletes;
 
-    protected string $table = 'admin_bonus_transaction';
+    protected $table = 'admin_bonus_transaction';
 
-    protected array $fillable = [
+    protected $fillable = [
         'member_bonus_transaction_id',
         'remarks'
     ];

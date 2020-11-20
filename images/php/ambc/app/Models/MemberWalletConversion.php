@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberWalletConversion extends Model
 {
-    protected string $table = 'member_wallet_conversion';
+    protected $table = 'member_wallet_conversion';
 
-    protected array $fillable = [
+    protected $fillable = [
         'member_id',
         'bonus_transaction_id',
         'roi_transaction_id',

@@ -9,9 +9,9 @@ class Member extends Model
 {
     use SoftDeletes;
 
-    protected string $table = 'members';
+    protected $table = 'members';
 
-    protected array $fillable = [
+    protected $fillable = [
         'first_name',
         'last_name'
     ];

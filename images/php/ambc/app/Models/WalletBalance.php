@@ -9,9 +9,9 @@ class WalletBalance extends Model
 {
     use SoftDeletes;
 
-    protected string $table = 'wallet_balances';
+    protected $table = 'wallet_balances';
 
-    protected array $fillable = [
+    protected $fillable = [
         'member_id',
         'roi',
         'bonus',

@@ -9,9 +9,9 @@ class TransactionType extends Model
 {
     use SoftDeletes;
 
-    protected string $table = 'transaction_type';
+    protected $table = 'transaction_type';
 
-    protected array $fillable = [
+    protected $fillable = [
         'name'
     ];
 }

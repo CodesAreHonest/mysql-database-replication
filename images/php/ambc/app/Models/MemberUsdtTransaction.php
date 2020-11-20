@@ -9,9 +9,9 @@ class MemberUsdtTransaction extends Model
 {
     use SoftDeletes;
 
-    protected string $table = 'member_usdt_transaction';
+    protected $table = 'member_usdt_transaction';
 
-    protected array $fillable = [
+    protected $fillable = [
         'member_id',
         'transaction_type_id',
         'txcode',

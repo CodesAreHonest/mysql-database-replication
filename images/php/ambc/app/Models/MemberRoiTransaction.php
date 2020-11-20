@@ -9,9 +9,9 @@ class MemberRoiTransaction extends Model
 {
     use SoftDeletes;
 
-    protected string $table = 'member_roi_transaction';
+    protected $table = 'member_roi_transaction';
 
-    protected array $fillable = [
+    protected $fillable = [
         'member_id',
         'transaction_type_id',
         'txcode',

@@ -9,9 +9,9 @@ class MemberUsdtTransferTransaction extends Model
 {
     use SoftDeletes;
 
-    protected string $table = 'member_usdt_transfer_transaction';
+    protected $table = 'member_usdt_transfer_transaction';
 
-    protected array $fillable = [
+    protected $fillable = [
         'sender_member_id',
         'receiver_member_id',
         'sender_transaction_id',
