@@ -20,7 +20,9 @@ for N in 1 2
   docker exec -it ambc_slave_db_$N mysql -uroot -psecurerootpassword \
     -e "SET GLOBAL general_log = 'on';" \
     -e "SET GLOBAL slow_query_log = 'on';" \
-    -e "SET GLOBAL long_query_time = 1;" 
+    -e "SET GLOBAL long_query_time = 1;" \ 
+    -e "SET GLOBAL log_output = 'table';" 
+
 done
 
 
